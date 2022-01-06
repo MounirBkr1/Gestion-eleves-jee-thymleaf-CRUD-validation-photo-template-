@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+
+<html xmlns:th='http://thymeleaf.org'
+      xmlns:layout='http://www.ultraq.net.nz/thymeleaf/layout'
+      layout:decorate="~{template}">
+    <head>
+    <meta charset="UTF-8">
+    <title>Liste des Etudiants</title>
+    <!--integrer bootstrap,th:href="css/bootstrap.min.css"=>thymelef accede au fichier static directement-->
+    <!--ou th:href="@{/css/bootstrap.min.css}" => ds context du spring chercher chercher css... -->
+    <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css"
+          th:href="@{/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" type="text/css" href="../static/css/myStyle.css"
+          th:href="@{/css/myStyle.css}"/>
+</head>
+<body layout:fragment="content">
+<div class="container spacer">
+    <a th:href="@{form}">saisir un etudiant</a>
+</div>
+<div class="container spacer">
+    <form th:action="@{index}" method="get">
+        <div class="form-group">
+            <label >Mot clé:</label>
+            <!--th:value="${motCle} pour qu'il reste affiché dans input field-->
+            <input type="text" name="motCle" th:value="${motCle}">
+            <button type="submit">chercher</button>
+        </div>
+    </form>
+
+</div>
+<div class="container spacer">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <td>ID</td>
+            <td>NOM</td>
+            <td>DATE</td>
+            <td>EMAIL</td>
+            <td>PHOTO</td>
+        </tr>
+        </thead>
+        <tbody>
+        <!--pageEtudiants.content : return le contenu de la page qui est une liste-->
+        <tr th:each="e:${pageEtudiants.content}">
+            <td th:text="${e.id}"></td>
+            <td th:text="${e.nom}"></td>
+            <td th:text="${e.dateNaissance}"></td>
+            <td th:text="${e.email}"></td>
+            <td><img th:src="@{getPhoto(id=${e.id})}" width="100" height="100" class="rounded mx-auto d-block"></td>
+            <td><a onclick="return confirm('Etes vous sur de supprimer?')" th:href="@{delet(id=${e.id})}">Supprimer</a></td><!-- ../supprimer?id=25*-->
+            <td><a  th:href="@{edit(id=${e.id})}">Editer</a></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="container">
+    <!--nav-pills pour afficher le tableau de numeros pages en ligne-->
+    <ul class="nav nav-pills">
+        <!--pages==[0,1,2,..]-->
+        <!--/*@thymesVar id="pages" type="array of number pages"*/-->
+        <li th:each="p:${pages}" th:class="${p==pageCourante}?active:''" >
+            <!--recuperer du model p et moCle-->
+            <!--@{ } => context courant, qui est EtudiantController ds ce cas-->
+            <!--th:href="@{index(page=${p},motCle=${motCle})}" : @RequestMapping(value="/index") in controller -->
+           <a th:text="${p}" th:href="@{index(page=${p},motCle=${motCle})}"  class=" px-3"></a> <!--@{Index(page=${p})}" => page=0 ..  -->
+        </li>
+    </ul>
+</div>
+
+
+</body>
+</html>
